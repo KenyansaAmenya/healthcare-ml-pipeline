@@ -1,43 +1,44 @@
-# Builder stage
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-# Copy dependency files
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 COPY pyproject.toml uv.lock ./
 
-# Install dependencies using uv (correct syntax)
-RUN uv sync --frozen --no-cache
 
-# Production stage
+RUN uv venv /app/.venv && \
+    uv sync --frozen --no-dev --no-editable && \
+    rm -rf /root/.cache/uv
+
+
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install runtime dependencies
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
+    && find /usr/lib -name '__pycache__' -type d -exec rm -rf {} + \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the virtual environment from builder
+
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy application code
-COPY . .
+COPY ./app ./app
+COPY ./models ./models
 
-# Create models directory
+
 RUN mkdir -p /app/models
 
-# Expose port
-EXPOSE 8000
 
-# Health check
+ENV PYTHONPATH=/app
+
+EXPOSE 10000
+
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:10000/health')"
 
-# Run the application
 CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:10000", "--timeout", "120"]
