@@ -1,4 +1,4 @@
-# Builder stage - this builds your dependencies
+# Builder stage
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
@@ -9,23 +9,22 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # Copy dependency files
 COPY pyproject.toml uv.lock ./
 
-# Install dependencies into a virtual environment
-RUN uv venv /opt/venv && \
-    uv pip install --no-cache -r pyproject.toml
+# Install dependencies using uv (correct syntax)
+RUN uv sync --frozen --no-cache
 
 # Production stage
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install runtime dependencies (libgomp1 is for certain ML libraries)
+# Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy virtual environment from builder
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Copy the virtual environment from builder
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy application code
 COPY . .
