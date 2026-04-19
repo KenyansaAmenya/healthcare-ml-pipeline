@@ -45,7 +45,7 @@ def create_application() -> FastAPI:
     )
 
     origins = (
-        ["https://yourdomain.com"]
+        ["https://clinical-sanctuary-web.vercel.app/"]
         if settings.app_env == "production"
         else ["*"]
     )
