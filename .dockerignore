@@ -1,0 +1,99 @@
+# Python cache files (same as .gitignore)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments - CRITICAL to exclude
+.venv/
+venv/
+env/
+ENV/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Data files - exclude large data from Docker image
+data/
+*.csv
+*.parquet
+*.xlsx
+!data/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker files (don't send to build context)
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Render config (not needed in Docker)
+render.yml
+render.yaml
+
+# Documentation
+README.md
+docs/
+*.md
+
+# CI/CD
+.github/
+.gitlab/
+.ci/
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Secrets (safety)
+*.key
+*.pem
+*.crt
