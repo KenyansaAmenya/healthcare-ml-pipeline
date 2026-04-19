@@ -32,11 +32,6 @@ ENV/
 *.log
 logs/
 
-# ML Models & Artifacts
-models/
-*.joblib
-*.pkl
-*.pickle
 
 # Data files
 data/
